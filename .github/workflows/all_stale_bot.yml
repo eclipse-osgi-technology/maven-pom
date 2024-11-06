@@ -6,5 +6,5 @@ on:
 jobs:
   stale:
     uses: eclipse-osgi-technology/.github/.github/workflows/reuse_all_stale_bot.yml@main
-	secrets:
-	  envGH: ${{ secrets.GITHUB_TOKEN }}
+    secrets:
+      envGH: ${{ secrets.GITHUB_TOKEN }}
