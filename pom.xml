@@ -123,6 +123,7 @@
                 -reproducible: true
                 ]]>
                 </bnd>
+                <bndfile>bnd.bnd</bndfile>
               </configuration>
             </execution>
             <execution>
@@ -131,7 +132,6 @@
                 <goal>test-jar</goal>
               </goals>
               <configuration>
-                <bndfile>tests.bnd</bndfile>
                 <bnd>
                   <![CDATA[
               Bundle-SymbolicName: ${project.groupId}.${project.artifactId}-tests
@@ -142,6 +142,7 @@
               -noimportjava: true
               ]]>
                 </bnd>
+                <bndfile>tests.bnd</bndfile>
                 <artifactFragment>true</artifactFragment>
                 <testCases>useTestCasesHeader</testCases>
               </configuration>
