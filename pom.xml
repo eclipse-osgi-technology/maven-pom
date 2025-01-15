@@ -134,7 +134,7 @@
                 <bndfile>tests.bnd</bndfile>
                 <bnd>
                   <![CDATA[
-              Bundle-SymbolicName: ${project.groupId}.${project.artifactId}
+              Bundle-SymbolicName: ${project.groupId}.${project.artifactId}-tests
               Test-Cases: ${classes;HIERARCHY_INDIRECTLY_ANNOTATED;org.junit.platform.commons.annotation.Testable;CONCRETE}
               -fixupmessages: *for this fragment/require bundle cannot be found on the classpath
               -noextraheaders: true
