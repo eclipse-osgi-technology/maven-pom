@@ -114,6 +114,7 @@
               <configuration>
                 <bnd>
                   <![CDATA[
+                Bundle-SymbolicName: ${project.groupId}.${project.artifactId}
                 Bundle-Copyright: Copyright (c) Contributors to the Eclipse Foundation.
                 Git-Descriptor: ${system-allow-fail;git describe --dirty --always --abbrev=9}
                 Git-SHA: ${system-allow-fail;git rev-list -1 --no-abbrev-commit HEAD}
@@ -133,6 +134,7 @@
                 <bndfile>tests.bnd</bndfile>
                 <bnd>
                   <![CDATA[
+              Bundle-SymbolicName: ${project.groupId}.${project.artifactId}
               Test-Cases: ${classes;HIERARCHY_INDIRECTLY_ANNOTATED;org.junit.platform.commons.annotation.Testable;CONCRETE}
               -fixupmessages: *for this fragment/require bundle cannot be found on the classpath
               -noextraheaders: true
