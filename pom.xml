@@ -20,7 +20,8 @@
   <packaging>pom</packaging>
 
   <name>eclipse.osgi-technology project - parent pom</name>
-  <description>This pom is the base/parent-pom for all other maven-projects of the eclipse.osgi-technology project</description>
+  <description>This pom is the base/parent-pom for all other maven-projects of
+    the eclipse.osgi-technology project</description>
 
   <properties>
 
@@ -32,6 +33,12 @@
 
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
+    <maven.clean.plugin.version>3.4.0</maven.clean.plugin.version>
+    <maven.resources.plugin.version>3.3.1</maven.resources.plugin.version>
+    <maven.compiler.plugin.version>3.13.0</maven.compiler.plugin.version>
+    <maven.surefire.plugin.version>3.3.0</maven.surefire.plugin.version>
+    <maven.jar.plugin.version>3.4.2</maven.jar.plugin.version>
+    <maven.install.plugin.version>3.1.2</maven.install.plugin.version>
 
     <!-- dash-->
     <dash.projectId>technology.osgi-technology</dash.projectId>
@@ -104,12 +111,11 @@
           <groupId>biz.aQute.bnd</groupId>
           <artifactId>bnd-maven-plugin</artifactId>
           <version>${bnd.version}</version>
-          <extensions>true</extensions>
           <executions>
             <execution>
-              <id>jar</id>
+              <id>bnd-process</id>
               <goals>
-                <goal>jar</goal>
+                <goal>bnd-process</goal>
               </goals>
               <configuration>
                 <bnd>
@@ -127,16 +133,19 @@
               </configuration>
             </execution>
             <execution>
-              <id>test-jar</id>
+              <id>bnd-process-tests</id>
+              <phase>process-test-classes</phase>
               <goals>
-                <goal>test-jar</goal>
+                <goal>bnd-process-tests</goal>
               </goals>
               <configuration>
                 <bnd>
                   <![CDATA[
               Bundle-SymbolicName: ${project.groupId}.${project.artifactId}-tests
               Fragment-Host: ${project.groupId}.${project.artifactId}
-              Test-Cases: ${classes;HIERARCHY_INDIRECTLY_ANNOTATED;org.junit.platform.commons.annotation.Testable;CONCRETE}
+              Git-Descriptor: ${system-allow-fail;git describe --dirty --always --abbrev=9}
+              Git-SHA: ${system-allow-fail;git rev-list -1 --no-abbrev-commit HEAD}
+              Test-Cases: ${classes;HIERARCHY_INDIRECTLY_ANNOTATED;org.junit.platform.commons.annotation.Testable;CONCRETE;NAMED;*.integration.*}
               -fixupmessages: *for this fragment/require bundle cannot be found on the classpath
               -noextraheaders: true
               -noimportjava: true
@@ -163,12 +172,13 @@
               </goals>
               <configuration>
                 <bndruns>
-                  <include>*.bndrun</include>
+                  <include>*-test.bndrun</include>
                 </bndruns>
                 <bundles>
                   <bundle>
                     ${project.build.directory}/${project.build.finalName}-tests.jar</bundle>
                 </bundles>
+                <writeOnChanges>true</writeOnChanges>
                 <failOnChanges>false</failOnChanges>
                 <includeDependencyManagement>true</includeDependencyManagement>
                 <reportOptional>false</reportOptional>
@@ -176,6 +186,21 @@
                   <scope>compile</scope>
                   <scope>runtime</scope>
                   <scope>test</scope>
+                </scopes>
+              </configuration>
+            </execution>
+            <execution>
+              <id>resolve</id>
+              <goals>
+                <goal>resolve</goal>
+              </goals>
+              <configuration>
+                <writeOnChanges>true</writeOnChanges>
+                <failOnChanges>false</failOnChanges>
+                <includeDependencyManagement>true</includeDependencyManagement>
+                <scopes>
+                  <scope>compile</scope>
+                  <scope>runtime</scope>
                 </scopes>
               </configuration>
             </execution>
@@ -194,11 +219,11 @@
               </goals>
               <configuration>
                 <bndruns>
-                  <include>test.bndrun</include>
+                  <include>*-test.bndrun</include>
                 </bndruns>
+                <resolve>false</resolve>
                 <failOnChanges>false</failOnChanges>
                 <includeDependencyManagement>true</includeDependencyManagement>
-                <resolve>false</resolve>
                 <scopes>
                   <scope>compile</scope>
                   <scope>runtime</scope>
@@ -228,6 +253,87 @@
               </configuration>
             </execution>
           </executions>
+        </plugin>
+        <plugin>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>${maven.clean.plugin.version}</version>
+        </plugin>
+        <!-- default lifecycle, jar packaging: see
+        https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
+        <plugin>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>${maven.resources.plugin.version}</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>${maven.compiler.plugin.version}</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>${maven.surefire.plugin.version}</version>
+          <configuration>
+            <excludes>
+              <exclude>**/integration/**</exclude>
+            </excludes>
+          </configuration>
+        </plugin>
+        <plugin>
+          <artifactId>maven-install-plugin</artifactId>
+          <version>${maven.install.plugin.version}</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>${maven.jar.plugin.version}</version>
+          <configuration>
+            <archive>
+              <manifestFile>
+                ${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+            </archive>
+            <skipIfEmpty>true</skipIfEmpty>
+          </configuration>
+          <executions>
+            <execution>
+              <id>test-jar</id>
+              <phase>package</phase>
+              <goals>
+                <goal>test-jar</goal>
+              </goals>
+              <configuration>
+                <archive>
+                  <manifestFile>
+                    ${project.build.testOutputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                </archive>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>flatten-maven-plugin</artifactId>
+          <version>1.6.0</version>
+          <configuration>
+            <flattenMode>oss</flattenMode>
+          </configuration>
+          <executions>
+            <execution>
+              <id>flatten</id>
+              <phase>process-resources</phase>
+              <goals>
+                <goal>flatten</goal>
+              </goals>
+            </execution>
+            <execution>
+              <id>flatten-clean</id>
+              <phase>clean</phase>
+              <goals>
+                <goal>clean</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.ec4j.maven</groupId>
+          <artifactId>editorconfig-maven-plugin</artifactId>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -309,99 +415,7 @@
         </plugin>
       </plugins>
     </pluginManagement>
-    <plugins>
-      <plugin>
-        <groupId>biz.aQute.bnd</groupId>
-        <artifactId>bnd-maven-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>biz.aQute.bnd</groupId>
-        <artifactId>bnd-resolver-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>resolve-test</id>
-            <phase>pre-integration-test</phase>
-            <goals>
-              <goal>resolve</goal>
-            </goals>
-            <inherited>false</inherited>
-            <configuration>
-              <skip>true</skip>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>biz.aQute.bnd</groupId>
-        <artifactId>bnd-testing-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>testing</id>
-            <goals>
-              <goal>testing</goal>
-            </goals>
-            <inherited>false</inherited>
-            <configuration>
-              <skip>true</skip>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>biz.aQute.bnd</groupId>
-        <artifactId>bnd-baseline-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>baseline</id>
-            <goals>
-              <goal>baseline</goal>
-            </goals>
-            <inherited>false</inherited>
-            <configuration>
-              <skip>true</skip>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.2.5</version>
-        <!-- We let bnd-testing-maven-plugin do all the testing -->
-        <configuration>
-          <skipTests>true</skipTests>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>flatten-maven-plugin</artifactId>
-        <version>1.6.0</version>
-        <configuration>
-          <flattenMode>oss</flattenMode>
-        </configuration>
-        <executions>
-          <execution>
-            <id>flatten</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>flatten</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>flatten-clean</id>
-            <phase>clean</phase>
-            <goals>
-              <goal>clean</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.ec4j.maven</groupId>
-        <artifactId>editorconfig-maven-plugin</artifactId>
-      </plugin>
 
-    </plugins>
   </build>
 
   <dependencyManagement>
