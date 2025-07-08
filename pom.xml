@@ -91,6 +91,17 @@
       </snapshots>
     </repository>
     <repository>
+      <id>central-snapshots</id>
+      <name>Central Snapshot</name>
+      <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
       <id>apache-snapshots</id>
       <name>Apache Snapshots</name>
       <url>https://repository.apache.org/snapshots/</url>
@@ -380,6 +391,19 @@
               <arg>--pinentry-mode</arg>
               <arg>loopback</arg>
             </gpgArguments>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.sonatype.central</groupId>
+          <artifactId>central-publishing-maven-plugin</artifactId>
+          <version>0.8.0</version>
+          <extensions>true</extensions>
+          <configuration>
+            <publishingServerId>central</publishingServerId>
+            <autoPublish>true</autoPublish>
+            <waitUntil>published</waitUntil>
+            <centralSnapshotsUrl>
+              https://central.sonatype.com/repository/maven-snapshots/</centralSnapshotsUrl>
           </configuration>
         </plugin>
         <plugin>
