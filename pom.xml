@@ -51,6 +51,8 @@
     <dash.repo>https://github.com/eclipse-osgi-technology/</dash.repo>
 
     <bnd.version>7.1.0</bnd.version>
+    
+    <maven.deploy.skip>true</maven.deploy.skip>
   </properties>
 
   <url>https://projects.eclipse.org/projects/technology.osgi-technology</url>
@@ -122,7 +124,17 @@
   </repositories>
 
   <build>
-
+    <plugins>
+      <!-- Deactivate the default maven-deloy-plugin globally -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <version>${maven.deploy.plugin.version}</version>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+    </plugins>
     <pluginManagement>
       <plugins>
         <plugin>
