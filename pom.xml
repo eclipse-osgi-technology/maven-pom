@@ -60,6 +60,18 @@
     <name>Eclipse Foundation - Project osgi-technology</name>
     <url>https://www.eclipse.org/</url>
   </organization>
+  <developers>
+    <developer>
+      <id>timothyjward</id>
+      <name>Tim Ward</name>
+      <email>timothyjward@apache.org</email>
+    </developer>
+    <developer>
+      <id>StefanBischof</id>
+      <name>Stefan Bischof</name>
+      <email>stbischof@bipolis.org</email>
+    </developer>
+  </developers>
   <licenses>
     <license>
       <name>EPL-2.0</name>
